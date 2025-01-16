@@ -1,6 +1,6 @@
 import java.awt.*; 
 import java.awt.event.*;
-import java.util.ArrayList; //stores all the pipes in our game
+import java.util.ArrayList; //stores all the pipes in the game
 import java.util.Random; // for placing pipes at random places
 import javax.swing.*;
 
@@ -171,7 +171,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
     public void move()
     {
         //bird                                                                        
-        velocityY += gravity;     //update the velocity with the gravity// updates all the x and y position of the object
+        velocityY += gravity;    
         bird.y += velocityY;
         bird.y = Math.max(bird.y, 0);
 
