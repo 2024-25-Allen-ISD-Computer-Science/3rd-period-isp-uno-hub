@@ -17,6 +17,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
     Image topPipeImg;
     Image bottomPipeImg;
     Image logoImg;
+    Image gameOverImg;
 
     //BIRD
     int birdX = boardWidth/8; // 1/8 from the left side of the screen
@@ -91,6 +92,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         topPipeImg = new ImageIcon(getClass().getResource("./toppipe.png")).getImage();
         bottomPipeImg = new ImageIcon(getClass().getResource("./bottompipe.png")).getImage();
         logoImg = new ImageIcon(getClass().getResource("./flappy-bird-logo-black-and-white-transformed.png")).getImage();
+        gameOverImg = new ImageIcon(getClass().getResource("./gameover.png")).getImage();
 
         bird = new Bird(birdImg);
         pipes = new ArrayList<Pipe>();
@@ -176,16 +178,23 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         g.setFont(new Font("Arial", Font.PLAIN, 32));
         if (gameOver)
         {
-            g.drawString("Game Over: " + String.valueOf((int)score), 10, 35);
+        // Game Over image
+        g.drawImage(gameOverImg, 5, boardHeight / 4, 350, 92, null);
+
+        // Display the current score
+        g.drawString("Score: " + (int)score, boardWidth / 2 - 70, boardHeight / 2 + 50);
+
+        // Display the highest score
+        g.drawString("High Score: " + highScore, boardWidth / 2 - 100, boardHeight / 2 + 100);
         }
         else
         {
-            g.drawString(String.valueOf((int) score), 10, 35);
-        }
+            // Show the highest score at the top while the game is ongoing
+            g.drawString("High Score: " + highScore, 10, 35);
 
-        //High score
-        g.setFont(new Font("Arial", Font.PLAIN, 32));
-        g.drawString("High Score: " + highScore, 10, 70);
+            // Show the current score while the game is ongoing
+            g.drawString(String.valueOf((int)score), 10, 75);
+        }
     }
     
     
@@ -239,9 +248,6 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
 
         if (gameOver)
         {
-            if ((int) score > highScore) {
-                highScore = (int) score; // Update the high score
-            }
             placePipesTimer.stop();
             gameLoop.stop();
         }
