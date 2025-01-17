@@ -1,7 +1,0 @@
-<script>start("c:\\Users\\trans\\Uno.python\\uno.folder\\");</script>
-<script>onHasParentDirectory();</script>
-<script>addRow("card.py","card.py",0,612,"612 B",1733372853,"12/4/24, 10:27:33 PM");</script>
-<script>addRow("game.py","game.py",0,7103,"6.9 kB",1733372853,"12/4/24, 10:27:33 PM");</script>
-<script>addRow("helpers.py","helpers.py",0,1109,"1.1 kB",1733372802,"12/4/24, 10:26:42 PM");</script>
-<script>addRow("main.py","main.py",0,603,"603 B",1733372853,"12/4/24, 10:27:33 PM");</script>
-<script>addRow("player.py","player.py",0,3010,"2.9 kB",1733372342,"12/4/24, 10:19:02 PM");</script>
