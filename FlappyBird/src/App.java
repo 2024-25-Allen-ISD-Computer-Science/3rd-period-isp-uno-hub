@@ -16,7 +16,7 @@ public class App {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // when player clicks x button on the window it will terminate the program
 
         FlappyBird flappyBird = new FlappyBird();
-        frame.add(flappyBird); //adds flappy bird to frame
+        frame.add(flappyBird); 
         frame.pack(); // so that the bar on top does not count when measuring the size
         flappyBird.requestFocus(); //flappybird receives inputs from user
         frame.setVisible(true); 

@@ -16,6 +16,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
     Image birdImg;
     Image topPipeImg;
     Image bottomPipeImg;
+    Image logoImg;
 
     //BIRD
     int birdX = boardWidth/8; // 1/8 from the left side of the screen
@@ -29,7 +30,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         int y = birdY;
         int width = birdWidth;
         int height = birdHeight;
-        Image img; 
+        Image img;
 
         Bird(Image img)
         {
@@ -59,10 +60,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
 
     }
 
-
-
     //game logic
-
     Bird bird;
     int velocityY = 0; //for bird
     int gravity = 1; //for bird
@@ -75,10 +73,11 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
     Timer placePipesTimer;
     
     boolean gameOver = false;
+    boolean showStartScreen = true; // Flag for the start screen
 
     double score = 0;
     int highScore = 0;
-
+    
     FlappyBird()
     {
         setPreferredSize(new Dimension(boardWidth, boardHeight));
@@ -91,6 +90,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         birdImg = new ImageIcon(getClass().getResource("./flappybird.png")).getImage();
         topPipeImg = new ImageIcon(getClass().getResource("./toppipe.png")).getImage();
         bottomPipeImg = new ImageIcon(getClass().getResource("./bottompipe.png")).getImage();
+        logoImg = new ImageIcon(getClass().getResource("./flappy-bird-logo-black-and-white-transformed.png")).getImage();
 
         bird = new Bird(birdImg);
         pipes = new ArrayList<Pipe>();
@@ -132,7 +132,28 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g); 
-        draw(g);
+        if (showStartScreen) {
+            drawStartScreen(g);
+        } else {
+            draw(g);
+        }
+    }
+
+    public void drawStartScreen(Graphics g) {
+        // Draw background
+        g.drawImage(backgroundImg, 0, 0, boardWidth, boardHeight, null);
+
+        // Draw logo
+        int logoWidth = 350;
+        int logoHeight = 93;
+        int logoX = (boardWidth - logoWidth) / 2;
+        int logoY = boardHeight / 4;
+        g.drawImage(logoImg, logoX, logoY, logoWidth, logoHeight, null);
+
+        // Draw "Press SPACE to start" text
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.BOLD, 24));
+        g.drawString("Press SPACE to start", boardWidth / 6, boardHeight / 2);
     }
 
     public void draw(Graphics g)
@@ -232,7 +253,12 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         {
             velocityY = -9;
 
-            if (gameOver)
+            if (showStartScreen) {
+                // Start the game
+                showStartScreen = false;
+                gameLoop.start();
+                placePipesTimer.start();
+            } else if (gameOver)
             {
                 //restart the game by resetting the conditions
                 bird.y = birdY;
