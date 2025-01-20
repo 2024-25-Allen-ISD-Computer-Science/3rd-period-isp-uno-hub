@@ -3,6 +3,12 @@ import pygame
 import random
 import time
 
+#from pygame.locals import *
+
+#flags = FULLSCREEN | DOUBLEBUF
+#screen = pygame.display.set_mode(resolution, flags, 16)
+#pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP])
+
 clock = pygame.time.Clock()
 pygame.init()
 
@@ -30,7 +36,7 @@ Collision = False
 CloudSpeed = 0    # Increase cloud movement speed with time
 
 Minutes = 0
-Seconds = 5  # timer (win condition) currently ver low for testing purposes
+Seconds = 5  # timer (win condition) currently very low for testing purposes
 TimeElapsed = 0
 
 XBound = (0, WIDTH)
@@ -69,7 +75,7 @@ class Player(Object):
     def gravity(self):
         global Collision
         # If player not touching cloud, gravity pulls character down
-        # If player falls to bottom, stop their fall + KILL YOURSELF
+        # If player falls to bottom, stop their fall + end game
         #for stuff in objects:
         if check_collisions(Sam, Cloud1):  # if on cloud, don't move downwards
             self.velocity[1] = 0
@@ -110,7 +116,7 @@ class Player(Object):
         
 
     def draw_player(self):
-        image = pygame.image.load(self.spritelist[self.frame])      # loads image from animation sprite list
+        image = pygame.image.load(self.spritelist[self.frame]).convert_alpha()      # loads image from animation sprite list
         # image = pygame.transform.scale(sprite, (self.width, self.height))
 
         self.change_direction()   # updates which direction player's facing
@@ -149,7 +155,7 @@ def check_collisions(obj1, obj2):
 # objects
 
 Sam = Player(640, 100, 31, 41, "Wcycle/SteamWalk1.png")
-Cumulonimbus = pygame.transform.scale(pygame.image.load("images/cloud.png"), (CLOUD_WIDTH, CLOUD_HEIGHT))  #correctly sized cloud
+Cumulonimbus = pygame.transform.scale(pygame.image.load("images/cloud.png").convert_alpha(), (CLOUD_WIDTH, CLOUD_HEIGHT))  #correctly sized cloud
 
 Cloud1 = Object(1200, random.randint(100, 600), CLOUD_WIDTH, CLOUD_HEIGHT, Cumulonimbus)
 Cloud2 = Object(1200, random.randint(100, 600), CLOUD_WIDTH, CLOUD_HEIGHT, Cumulonimbus)   #Creates four clouds that will loop
@@ -209,8 +215,6 @@ while GameOver == False:
     if Cloud4.x > 1290:
         Cloud4 = Object(80, random.randint(100, 600), CLOUD_WIDTH, CLOUD_HEIGHT, Cumulonimbus)
 
-    clock.tick(70)    # caps it from refreshing more than 70 times a second
-    pygame.display.update()    # updates changes in sprites
 
     end = time.time()
     TimeElapsed += (end - start)   # add the time that passed to the variable
@@ -225,14 +229,17 @@ while GameOver == False:
             Seconds = 59  # if 60 seconds passed, reduce one minute, start the next one
             Minutes -= 1
             TimeElapsed = 0 
+
+    clock.tick(40)    # caps it from refreshing more than 70 times a second
+    pygame.display.update()    # updates changes in sprites
     
 
-if Win == True:
+if Win == True:   # If game over and win == true
     pygame.draw.rect(screen, (7, 22, 48), pygame.Rect(0, 0, WIDTH, HEIGHT))
-    font = pygame.font.SysFont("Rhinos", 70)
+    font = pygame.font.SysFont("Rhinos", 70)   # sets up win screen
 
     WinText = font.render("You Won!", False, (255, 215, 0))
-    screen.blit(WinText, (510, 350))
+    screen.blit(WinText, (510, 350))    # draws win screen
     pygame.display.flip()
 
     sleep(2)  # will increase to three seconds for final game
