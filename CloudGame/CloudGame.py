@@ -35,7 +35,7 @@ GameOver = False
 Win = False
 Collision = False
 
-Minutes = 1
+Minutes = 3
 Seconds = 0  # timer (win condition) currently very low for testing purposes
 TimeElapsed = 0
 
@@ -126,12 +126,11 @@ class Player(Object):
         if Collision == True:
             if xu == 1:
                 self.velocity[1] = -5
-                print("Jump")
 
 
     def update(self):
-        self.set_velocity(PInputR, PInputL, PInputU)
         self.gravity()  # calls gravity before updating
+        self.set_velocity(PInputR, PInputL, PInputU)
         self.x += self.velocity[0]
         self.y += self.velocity[1]   # updates player position + redraws character
         self.x = max(XBound[0], min(self.x, XBound[1] - self.width))
@@ -176,7 +175,7 @@ def check_collisions(obj1, obj2):
     w1, h1 = obj1.width, obj1.height
     w2 = obj2.width
     if x1 + w1 >= x2 and x1 <= x2 + w2 - 15:    #If player in same x boundary as the clouds width
-        if y1 + h1 <= y2 + 26 and y1 + h1 >= y2 + 20:   # 30 If player bottom equal to top of cloud and player top is higher
+        if y1 + h1 <= y2 + 25 and y1 + h1 >= y2 + 18:   # 30 If player bottom equal to top of cloud and player top is higher
             return True
         else:
             return False
