@@ -18,6 +18,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
     Image bottomPipeImg;
     Image logoImg;
     Image gameOverImg;
+    Image groundImg;
 
     //BIRD
     int birdX = boardWidth/8; // 1/8 from the left side of the screen
@@ -93,6 +94,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         bottomPipeImg = new ImageIcon(getClass().getResource("./bottompipe.png")).getImage();
         logoImg = new ImageIcon(getClass().getResource("./flappy-bird-logo-black-and-white-transformed.png")).getImage();
         gameOverImg = new ImageIcon(getClass().getResource("./gameover.png")).getImage();
+        groundImg = new ImageIcon(getClass().getResource("./ground.png")).getImage();
 
         bird = new Bird(birdImg);
         pipes = new ArrayList<Pipe>();
@@ -120,7 +122,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
     public void placePipes()
     {
         int randomPipeY = (int) (pipeY - pipeHeight/4 - Math.random()*(pipeHeight/2));
-        int openingSpace = boardHeight/4;
+        int openingSpace = boardHeight / 4;
         
         Pipe topPipe = new Pipe(topPipeImg);
         topPipe.y = randomPipeY;
@@ -172,6 +174,8 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
             Pipe pipe = pipes.get(i);
             g.drawImage(pipe.img, pipe.x, pipe.y, pipe.width, pipe.height, null);
         }
+
+        g.drawImage(groundImg, 0, boardHeight - 64, boardWidth, 64, null);
 
         //score
         g.setColor(Color.white);
@@ -231,6 +235,12 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         {
             gameOver = true;
         }
+
+        if (bird.y + bird.height >= boardHeight - 64) {
+            bird.y = boardHeight - 64 - bird.height;
+            gameOver = true;
+        }
+        
     }
 
     public boolean collision(Bird a, Pipe b)
@@ -240,6 +250,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         a.y < b.y + b.height &&
         a.y + a.height >b.y;
     }
+    
 
     @Override 
     public void actionPerformed(ActionEvent e) {
@@ -258,6 +269,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         if (e.getKeyCode() == KeyEvent.VK_SPACE)
         {
             velocityY = -9;
+            //playSound("sfx_swooshing.wav"); //plays sound 
 
             if (showStartScreen) {
                 // Start the game
