@@ -18,9 +18,10 @@ WIDTH = 1280
 HEIGHT = 720        # Constants
 CLOUD_WIDTH = 162
 CLOUD_HEIGHT = 62
+Scroll = 0  # scroll for parallaxing
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))   # creates window
-pygame.display.set_caption("2D Game")          # sets up screen size and captions it
+pygame.display.set_caption("Cloud Game")          # sets up screen size and captions it
 background = pygame.image.load("images/CombinedBlue.png").convert()
 background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
@@ -33,13 +34,27 @@ PInputU = 0    # initializes the booleans for player input
 GameOver = False
 Win = False
 Collision = False
-CloudSpeed = 0    # Increase cloud movement speed with time
 
-Minutes = 0
-Seconds = 5  # timer (win condition) currently very low for testing purposes
+Minutes = 1
+Seconds = 0  # timer (win condition) currently very low for testing purposes
 TimeElapsed = 0
 
 XBound = (0, WIDTH)
+Step_SFX = pygame.mixer.Sound("CloudSFX.mp3")
+SFX_Counter = 0
+
+
+bg_images = []
+for i in range(1, 4):
+    bgImage = pygame.transform.scale(pygame.image.load("images/"+str(i)+".png").convert_alpha(), (WIDTH, HEIGHT))
+    bg_images.append(bgImage)
+
+def draw_bg():
+    for x in range(3):
+        speed = 0.5
+        for i in bg_images:
+            screen.blit(i, ((x * WIDTH) - (Scroll * speed), 0))
+            speed += 1
 
 
 class Object:
@@ -74,24 +89,30 @@ class Player(Object):
 
     def gravity(self):
         global Collision
+        global SFX_Counter
         # If player not touching cloud, gravity pulls character down
         # If player falls to bottom, stop their fall + end game
         #for stuff in objects:
         if check_collisions(Sam, Cloud1):  # if on cloud, don't move downwards
             self.velocity[1] = 0
             Collision = True
+
         elif check_collisions(Sam, Cloud2):  # if on cloud, don't move downwards
             self.velocity[1] = 0
             Collision = True
+
         elif check_collisions(Sam, Cloud3):  # if on cloud, don't move downwards
             self.velocity[1] = 0
             Collision = True
+
         elif check_collisions(Sam, Cloud4):  # if on cloud, don't move downwards
             self.velocity[1] = 0
             Collision = True
+
         else:
-            self.velocity[1] += 0.05   # Constant speed that the player falls down
+            self.velocity[1] += 0.05   #  += 0.05 Constant speed that the player falls down
             Collision = False
+
 
     def change_direction(self):
         if self.velocity[0] < 0:      # boolean for which direction character is facing
@@ -101,9 +122,11 @@ class Player(Object):
 
     def set_velocity(self, xr, xl, xu):
         self.velocity[0] = (xr - xl) * 3    # got rid of the y-axis movement to make space for jumping
+        
         if Collision == True:
             if xu == 1:
                 self.velocity[1] = -5
+                print("Jump")
 
 
     def update(self):
@@ -116,6 +139,8 @@ class Player(Object):
         
 
     def draw_player(self):
+        global SFX_Counter
+
         image = pygame.image.load(self.spritelist[self.frame]).convert_alpha()      # loads image from animation sprite list
         # image = pygame.transform.scale(sprite, (self.width, self.height))
 
@@ -127,6 +152,12 @@ class Player(Object):
         if self.velocity[0] == 0:
             self.frame = 0    # If the player isn't moving set character to first sprite (resting image)
             return
+        else:
+            if Collision == True:
+                SFX_Counter += 1    # plays sound effect while walking
+                if SFX_Counter >= 26:
+                    Step_SFX.play()
+                    SFX_Counter = 0
         
         self.frame_timer += 1   
 
@@ -145,17 +176,19 @@ def check_collisions(obj1, obj2):
     w1, h1 = obj1.width, obj1.height
     w2 = obj2.width
     if x1 + w1 >= x2 and x1 <= x2 + w2 - 15:    #If player in same x boundary as the clouds width
-        if y1 + h1 <= y2 + 30 and y1 + h1 >= y2 + 20:   #If player bottom equal to top of cloud and player top is higher
+        if y1 + h1 <= y2 + 26 and y1 + h1 >= y2 + 20:   # 30 If player bottom equal to top of cloud and player top is higher
             return True
         else:
             return False
     else:
         return False   # if not, then return False
 
+
 # objects
 
 Sam = Player(640, 100, 31, 41, "Wcycle/SteamWalk1.png")
 Cumulonimbus = pygame.transform.scale(pygame.image.load("images/cloud.png").convert_alpha(), (CLOUD_WIDTH, CLOUD_HEIGHT))  #correctly sized cloud
+
 
 Cloud1 = Object(1200, random.randint(100, 600), CLOUD_WIDTH, CLOUD_HEIGHT, Cumulonimbus)
 Cloud2 = Object(1200, random.randint(100, 600), CLOUD_WIDTH, CLOUD_HEIGHT, Cumulonimbus)   #Creates four clouds that will loop
@@ -164,12 +197,16 @@ Cloud4 = Object(80, random.randint(100, 600), CLOUD_WIDTH, CLOUD_HEIGHT, Cumulon
 
 objects.pop(0)
 
+#key = pygame.key.get_pressed()
+
 font = pygame.font.SysFont("Bremen BD BT", 25)
 
 while GameOver == False:
     
     start = time.time()   # gets start of time for each cycle
-    screen.blit(background, (0, 0))   # refreshes background before player movement
+    #screen.blit(background, (0, 0))   # refreshes background before player movement
+    
+    draw_bg()
     pygame.draw.rect(screen, gray, pygame.Rect(20, 20, 160, 40))  #base for high score counter
 
     text = font.render("Time Left: "+str(Minutes)+":"+str(Seconds), False, (0, 0, 0))
@@ -185,36 +222,48 @@ while GameOver == False:
             pygame.quit()
             SystemExit()
         elif event.type == pygame.KEYDOWN:   # If user presses down on key, acknowledges the input
-            if event.key == pygame.K_RIGHT:
-                PInputR = 1
-            elif event.key == pygame.K_LEFT:
-                PInputL = 1
-            elif event.key == pygame.K_UP:
-                PInputU = 1
+           if event.key == pygame.K_RIGHT:
+               PInputR = 1
+           elif event.key == pygame.K_LEFT:
+               PInputL = 1
+           elif event.key == pygame.K_UP:
+               PInputU = 1
         elif event.type == pygame.KEYUP:     # If user lets go of key, stops player movement in that direction
             if event.key == pygame.K_RIGHT:
-                PInputR = 0
+               PInputR = 0
             elif event.key == pygame.K_LEFT:
-                PInputL = 0
+               PInputL = 0
             elif event.key == pygame.K_UP:
-                PInputU = 0
+               PInputU = 0
+
+    
+    key = pygame.key.get_pressed() 
+    if key[pygame.K_LEFT]:
+        if Scroll > 0:     # scrolling for the background (tied to player movement)
+            Scroll -= 1
+    if key[pygame.K_RIGHT]:
+        if Scroll < 3 * WIDTH:
+            Scroll += 1
+    
 
 
     Player.update(Sam)      # calls Player then updates them + draws
 
-    Object.update_thingy(Cloud1, Cumulonimbus, random.randint(-3, -2) - CloudSpeed)   # Spawns in the clouds and loops them
+    Object.update_thingy(Cloud1, Cumulonimbus, random.randint(-3, -2))   # Spawns in the clouds and loops them
     if Cloud1.x < -10:
         Cloud1 = Object(1200, random.randint(100, 600), CLOUD_WIDTH, CLOUD_HEIGHT, Cumulonimbus)  # when they get off screen
-    Object.update_thingy(Cloud2, Cumulonimbus, (random.randint(-2, -1)) -  CloudSpeed)
+    Object.update_thingy(Cloud2, Cumulonimbus, random.randint(-2, -1))
     if Cloud2.x < -10:
         Cloud2 = Object(1200, random.randint(100, 600), CLOUD_WIDTH, CLOUD_HEIGHT, Cumulonimbus)
-    Object.update_thingy(Cloud3, Cumulonimbus, (random.randint(1, 3)) + CloudSpeed)
+    Object.update_thingy(Cloud3, Cumulonimbus, random.randint(1, 3))
     if Cloud3.x > 1290:
         Cloud3 = Object(80, random.randint(100, 600), CLOUD_WIDTH, CLOUD_HEIGHT, Cumulonimbus)
-    Object.update_thingy(Cloud4, Cumulonimbus, (random.randint(2, 4)) + CloudSpeed)
+    Object.update_thingy(Cloud4, Cumulonimbus, random.randint(2, 4))
     if Cloud4.x > 1290:
         Cloud4 = Object(80, random.randint(100, 600), CLOUD_WIDTH, CLOUD_HEIGHT, Cumulonimbus)
 
+    clock.tick(60)    # caps it from refreshing more than 70 times a second
+    pygame.display.update()    # updates changes in sprites
 
     end = time.time()
     TimeElapsed += (end - start)   # add the time that passed to the variable
@@ -230,9 +279,6 @@ while GameOver == False:
             Minutes -= 1
             TimeElapsed = 0 
 
-    clock.tick(40)    # caps it from refreshing more than 70 times a second
-    pygame.display.update()    # updates changes in sprites
-    
 
 if Win == True:   # If game over and win == true
     pygame.draw.rect(screen, (7, 22, 48), pygame.Rect(0, 0, WIDTH, HEIGHT))
@@ -242,7 +288,7 @@ if Win == True:   # If game over and win == true
     screen.blit(WinText, (510, 350))    # draws win screen
     pygame.display.flip()
 
-    sleep(2)  # will increase to three seconds for final game
+    sleep(3)  # will increase to three seconds for final game
 
     print("You Win!")
 
@@ -254,6 +300,6 @@ else:
     screen.blit(GOtext, (510, 350))
     pygame.display.flip()  # puts the game over screen in the front
 
-    sleep(1)    #freezes the screen in game over mode for three seconds (will change later)
+    sleep(3)    #freezes the screen in game over mode for three seconds (will change later)
 
     print("Game Over!\nRun the code to try again")  # prints after game's lost
