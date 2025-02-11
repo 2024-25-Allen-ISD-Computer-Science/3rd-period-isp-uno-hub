@@ -3,6 +3,9 @@ import java.awt.event.*;
 import java.util.ArrayList; //stores all the pipes in the game
 import java.util.Random; // for placing pipes at random places
 import javax.swing.*;
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.IOException;
 
 
 public class FlappyBird extends JPanel implements ActionListener, KeyListener{
@@ -19,6 +22,8 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
     Image logoImg;
     Image gameOverImg;
     Image groundImg;
+    private Clip flapSound;
+    private Clip gameOverSound;
 
     //BIRD
     int birdX = boardWidth/8; // 1/8 from the left side of the screen
@@ -113,6 +118,13 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         gameLoop = new Timer(1000/60, this);
         gameLoop.start(); // starts the timer
 
+        try {
+            flapSound = loadSound("/Users/ismatarabegum/Desktop/FlappyBird/FlappyBird/src/sfx_wing.wav");
+            gameOverSound = loadSound("/Users/ismatarabegum/Desktop/FlappyBird/FlappyBird/src/sfx_hit.wav");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     //(0-1) * (pipeHeight/2) -> (0,256)
@@ -140,6 +152,27 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
             drawStartScreen(g);
         } else {
             draw(g);
+        }
+    }
+
+    private Clip loadSound(String filePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        File soundFile = new File(filePath);
+        if (!soundFile.exists()) {
+            System.out.println("File not found: " + filePath);
+            return null;
+        }
+        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
+        Clip clip = AudioSystem.getClip();
+        clip.open(audioInputStream);
+        return clip;
+    }
+
+    private void playSound(Clip clip) {
+        if (clip != null) {
+            clip.setFramePosition(0); // Rewind to the beginning
+            clip.start();
+        } else {
+            System.out.println("Sound clip is null. Cannot play.");
         }
     }
 
@@ -261,6 +294,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         {
             placePipesTimer.stop();
             gameLoop.stop();
+            playSound(gameOverSound);
         }
     }
     
@@ -269,7 +303,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         if (e.getKeyCode() == KeyEvent.VK_SPACE)
         {
             velocityY = -9;
-            //playSound("sfx_swooshing.wav"); //plays sound 
+            playSound(flapSound); //plays sound 
 
             if (showStartScreen) {
                 // Start the game

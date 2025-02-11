@@ -20,5 +20,7 @@ public class App {
         frame.pack(); // so that the bar on top does not count when measuring the size
         flappyBird.requestFocus(); //flappybird receives inputs from user
         frame.setVisible(true); 
+        System.out.println("Working Directory: " + System.getProperty("user.dir"));
+
     }
 }
