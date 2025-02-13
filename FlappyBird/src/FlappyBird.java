@@ -4,8 +4,9 @@ import java.util.ArrayList; //stores all the pipes in the game
 import java.util.Random; // for placing pipes at random places
 import javax.swing.*;
 import javax.sound.sampled.*;
-import java.io.File;
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 
 public class FlappyBird extends JPanel implements ActionListener, KeyListener{
@@ -111,7 +112,8 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
             {
                 placePipes();
             }
-        });
+            }
+        );
         placePipesTimer.start();
 
         //game timer
@@ -119,12 +121,12 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         gameLoop.start(); // starts the timer
 
         try {
-            flapSound = loadSound("/Users/ismatarabegum/Desktop/FlappyBird/FlappyBird/src/sfx_wing.wav");
-            gameOverSound = loadSound("/Users/ismatarabegum/Desktop/FlappyBird/FlappyBird/src/sfx_hit.wav");
+            flapSound = loadSound("/sfx_wing.wav");
+            gameOverSound = loadSound("/sfx_hit.wav");
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
     }
 
     //(0-1) * (pipeHeight/2) -> (0,256)
@@ -155,16 +157,17 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         }
     }
 
-    private Clip loadSound(String filePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        File soundFile = new File(filePath);
-        if (!soundFile.exists()) {
-            System.out.println("File not found: " + filePath);
+    private Clip loadSound(String resourcePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+    try (InputStream soundStream = getClass().getResourceAsStream(resourcePath)) {
+        if (soundStream == null) {
+            System.out.println("Sound file not found: " + resourcePath);
             return null;
         }
-        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
+        AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new BufferedInputStream(soundStream));
         Clip clip = AudioSystem.getClip();
         clip.open(audioInputStream);
         return clip;
+    }
     }
 
     private void playSound(Clip clip) {
