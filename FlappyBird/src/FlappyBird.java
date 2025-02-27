@@ -25,6 +25,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
     Image groundImg;
     private Clip flapSound;
     private Clip gameOverSound;
+    private Clip scoreAdded;
 
     //BIRD
     int birdX = boardWidth/8; // 1/8 from the left side of the screen
@@ -123,6 +124,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         try {
             flapSound = loadSound("/sfx_wing.wav");
             gameOverSound = loadSound("/sfx_hit.wav");
+            scoreAdded = loadSound("/sfx_point.wav");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -202,7 +204,20 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         g.drawImage(backgroundImg, 0, 0, boardWidth, boardHeight, null);
 
         //bird
-        g.drawImage(bird.img, bird.x, bird.y, bird.width, bird.height, null);
+        //g.drawImage(bird.img, bird.x, bird.y, bird.width, bird.height, null);
+        Graphics2D g2d = (Graphics2D) g.create();
+
+        // Calculate rotation angle based on velocity
+        double rotationAngle = Math.toRadians(Math.max(-30, Math.min(velocityY * 3, 90))); // Limits rotation between -30° and 90°
+
+        // Set rotation pivot to the bird's center
+        int centerX = bird.x + bird.width / 2;
+        int centerY = bird.y + bird.height / 2;
+
+        g2d.rotate(rotationAngle, centerX, centerY);
+        g2d.drawImage(bird.img, bird.x, bird.y, bird.width, bird.height, null);
+        g2d.dispose();
+
 
         //pipes
         for (int i = 0; i < pipes.size(); i++)
@@ -255,6 +270,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
             {
                 pipe.passed = true;
                 score += 0.5;
+                playSound(scoreAdded);
 
                 if ((int) score > highScore) {
                     highScore = (int) score;
