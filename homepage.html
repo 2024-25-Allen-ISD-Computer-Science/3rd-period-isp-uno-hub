@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Hub</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #4B0082, #8A2BE2);
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .background-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .background-effects span {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: float 10s infinite linear;
+        }
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-200px);
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .game-hub {
+            width: 450px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: popIn 1s ease-in-out;
+        }
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .game {
+            width: 90px;
+            height: 90px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .game:hover {
+            transform: scale(1.1) rotate(5deg);
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        .game-name {
+            margin-top: 8px;
+            font-size: 14px;
+            color: white;
+        }
+        .flappy-bird {
+            background-image: url('https://upload.wikimedia.org/wikipedia/en/0/0a/Flappy_Bird_icon.png');
+            background-size: cover;
+            background-position: center;
+        }
+        .scroller {
+            background-image: url('https://as1.ftcdn.net/jpg/04/75/26/64/1000_F_475266482_8yJtxGC5xSjyDw2BF5T07MvxV5KfLpQr.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        .uno {
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShBRFXeIUSzhnaZlFRCWNhs_QXtyCmwj4CAQ&s');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-effects">
+        <script>
+            for (let i = 0; i < 15; i++) {
+                let star = document.createElement("span");
+                star.style.top = Math.random() * 100 + "%";
+                star.style.left = Math.random() * 100 + "%";
+                star.style.animationDelay = Math.random() * 5 + "s";
+                document.querySelector(".background-effects").appendChild(star);
+            }
+        </script>
+    </div>
+    <div class="game-hub">
+        <div class="title">Game Hub</div>
+        <div class="game-grid">
+            <div class="game-container">
+                <div class="game uno" onclick="location.href='uno.html'"></div>
+                <div class="game-name">Uno</div>
+            </div>
+            <div class="game-container">
+                <div class="game scroller" onclick="location.href='scroller.html'"></div>
+                <div class="game-name">2D Scroller</div>
+            </div>
+            <div class="game-container">
+                <div class="game flappy-bird" onclick="location.href='flappy-bird.html'"></div>
+                <div class="game-name">Flappy Bird</div>
+            </div>
+            <div class="game-container">
+                <div class="game"></div>
+                <div class="game-name">...</div>
+            </div>
+            <div class="game-container">
+                <div class="game"></div>
+                <div class="game-name">...</div>
+            </div>
+            <div class="game-container">
+                <div class="game"></div>
+                <div class="game-name">...</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
