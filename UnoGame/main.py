@@ -20,4 +20,3 @@ player_d = Player("Player D", d)
 
 g = Game(player_a, player_b, player_c, player_d)
 g.play()
-

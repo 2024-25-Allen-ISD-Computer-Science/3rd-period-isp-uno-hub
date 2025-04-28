@@ -14,6 +14,7 @@ public class GameLauncher {
 
         JButton flappyBirdButton = new JButton("Flappy Bird!");
         JButton cloudGameButton = new JButton("Cloud Game!");
+        JButton unoGameButton = new JButton("Uno!");
 
         flappyBirdButton.addActionListener(new ActionListener() {
             @Override
@@ -29,8 +30,16 @@ public class GameLauncher {
             }
         });
 
+        unoGameButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runUnoGame();
+            }
+        });
+
         frame.add(flappyBirdButton);
         frame.add(cloudGameButton);
+        frame.add(unoGameButton);
         frame.setVisible(true);
     }
 
@@ -56,6 +65,21 @@ public class GameLauncher {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Failed to start Cloud Game!");
+        }
+    }
+
+    private static void runUnoGame() {
+        try {
+            
+            ProcessBuilder pb = new ProcessBuilder("python3", "main.py");
+            pb.directory(new File("UnoGame"));
+            pb.inheritIO();
+            
+            Process process = pb.start();
+            process.waitFor();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to start Uno!");
         }
     }
 }
