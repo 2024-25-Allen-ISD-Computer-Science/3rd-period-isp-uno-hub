@@ -83,6 +83,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
     
     boolean gameOver = false;
     boolean showStartScreen = true; // Flag for the start screen
+    boolean gameStarted = false;
 
     double score = 0;
     int highScore = 0;
@@ -255,6 +256,7 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
     
     public void move()
     {
+        if (!gameStarted) return;
         //bird                                                                        
         velocityY += gravity;    
         bird.y += velocityY;
@@ -327,6 +329,8 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
             if (showStartScreen) {
                 // Start the game
                 showStartScreen = false;
+                gameStarted = true;
+                gameOver = false;
                 gameLoop.start();
                 placePipesTimer.start();
             } else if (gameOver)
